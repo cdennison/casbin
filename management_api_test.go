@@ -32,7 +32,7 @@ func testStringList(t *testing.T, title string, f func() []string, res []string)
 }
 
 func TestGetList(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
+	e := NewSyncedEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
 
 	testStringList(t, "Subjects", e.GetAllSubjects, []string{"alice", "bob", "data2_admin"})
 	testStringList(t, "Objeccts", e.GetAllObjects, []string{"data1", "data2"})
@@ -40,7 +40,7 @@ func TestGetList(t *testing.T) {
 	testStringList(t, "Roles", e.GetAllRoles, []string{"data2_admin"})
 }
 
-func testGetPolicy(t *testing.T, e *Enforcer, res [][]string) {
+func testGetPolicy(t *testing.T, e *SyncedEnforcer, res [][]string) {
 	t.Helper()
 	myRes := e.GetPolicy()
 	log.Print("Policy: ", myRes)
@@ -50,7 +50,7 @@ func testGetPolicy(t *testing.T, e *Enforcer, res [][]string) {
 	}
 }
 
-func testGetFilteredPolicy(t *testing.T, e *Enforcer, fieldIndex int, res [][]string, fieldValues ...string) {
+func testGetFilteredPolicy(t *testing.T, e *SyncedEnforcer, fieldIndex int, res [][]string, fieldValues ...string) {
 	t.Helper()
 	myRes := e.GetFilteredPolicy(fieldIndex, fieldValues...)
 	log.Print("Policy for ", util.ParamsToString(fieldValues...), ": ", myRes)
@@ -60,7 +60,7 @@ func testGetFilteredPolicy(t *testing.T, e *Enforcer, fieldIndex int, res [][]st
 	}
 }
 
-func testGetGroupingPolicy(t *testing.T, e *Enforcer, res [][]string) {
+func testGetGroupingPolicy(t *testing.T, e *SyncedEnforcer, res [][]string) {
 	t.Helper()
 	myRes := e.GetGroupingPolicy()
 	log.Print("Grouping policy: ", myRes)
@@ -70,7 +70,7 @@ func testGetGroupingPolicy(t *testing.T, e *Enforcer, res [][]string) {
 	}
 }
 
-func testGetFilteredGroupingPolicy(t *testing.T, e *Enforcer, fieldIndex int, res [][]string, fieldValues ...string) {
+func testGetFilteredGroupingPolicy(t *testing.T, e *SyncedEnforcer, fieldIndex int, res [][]string, fieldValues ...string) {
 	t.Helper()
 	myRes := e.GetFilteredGroupingPolicy(fieldIndex, fieldValues...)
 	log.Print("Grouping policy for ", util.ParamsToString(fieldValues...), ": ", myRes)
@@ -80,7 +80,7 @@ func testGetFilteredGroupingPolicy(t *testing.T, e *Enforcer, fieldIndex int, re
 	}
 }
 
-func testHasPolicy(t *testing.T, e *Enforcer, policy []string, res bool) {
+func testHasPolicy(t *testing.T, e *SyncedEnforcer, policy []string, res bool) {
 	t.Helper()
 	myRes := e.HasPolicy(policy)
 	log.Print("Has policy ", util.ArrayToString(policy), ": ", myRes)
@@ -90,7 +90,7 @@ func testHasPolicy(t *testing.T, e *Enforcer, policy []string, res bool) {
 	}
 }
 
-func testHasGroupingPolicy(t *testing.T, e *Enforcer, policy []string, res bool) {
+func testHasGroupingPolicy(t *testing.T, e *SyncedEnforcer, policy []string, res bool) {
 	t.Helper()
 	myRes := e.HasGroupingPolicy(policy)
 	log.Print("Has grouping policy ", util.ArrayToString(policy), ": ", myRes)
@@ -100,7 +100,7 @@ func testHasGroupingPolicy(t *testing.T, e *Enforcer, policy []string, res bool)
 	}
 }
 
-func testHasGroupingPolicyStringInput(t *testing.T, e *Enforcer, policy1 string, policy2 string, res bool) {
+func testHasGroupingPolicyStringInput(t *testing.T, e *SyncedEnforcer, policy1 string, policy2 string, res bool) {
 	t.Helper()
 	myRes := e.HasGroupingPolicy(policy1, policy2)
 	log.Print("Has grouping policy ", policy1, policy2, ": ", myRes)
@@ -111,7 +111,7 @@ func testHasGroupingPolicyStringInput(t *testing.T, e *Enforcer, policy1 string,
 }
 
 func TestGetPolicy(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
+	e := NewSyncedEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
 
 	testGetPolicy(t, e, [][]string{
 		{"alice", "data1", "read"},
@@ -150,12 +150,12 @@ func TestGetPolicy(t *testing.T) {
 	testHasGroupingPolicy(t, e, []string{"alice", "data2_admin"}, true)
 	testHasGroupingPolicy(t, e, []string{"bob", "data2_admin"}, false)
 
-	testHasGroupingPolicyStringInput(t, e, "alice", "data2_admin", true)
-	testHasGroupingPolicyStringInput(t, e, "bob", "data2_admin", false)
+	testHasGroupingPolicyStringInput(t, e, "alice", "data2_admin",true)
+	testHasGroupingPolicyStringInput(t, e, "bob", "data2_admin",false)
 }
 
 func TestModifyPolicy(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
+	e := NewSyncedEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
 
 	testGetPolicy(t, e, [][]string{
 		{"alice", "data1", "read"},
@@ -170,8 +170,8 @@ func TestModifyPolicy(t *testing.T) {
 	e.AddPolicy("eve", "data3", "read")
 
 	namedPolicy := []string{"eve", "data3", "read"}
-	e.RemoveNamedPolicy("p", namedPolicy)
-	e.AddNamedPolicy("p", namedPolicy)
+	e.RemoveNamedPolicy("p",namedPolicy)
+	e.AddNamedPolicy("p",namedPolicy)
 
 	testGetPolicy(t, e, [][]string{
 		{"data2_admin", "data2", "read"},
@@ -184,7 +184,7 @@ func TestModifyPolicy(t *testing.T) {
 }
 
 func TestModifyGroupingPolicy(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
+	e := NewSyncedEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
 
 	testGetRoles(t, e, "alice", []string{"data2_admin"})
 	testGetRoles(t, e, "bob", []string{})
@@ -197,9 +197,9 @@ func TestModifyGroupingPolicy(t *testing.T) {
 
 	namedGroupingPolicy := []string{"alice", "data2_admin"}
 	testGetRoles(t, e, "alice", []string{})
-	e.AddNamedGroupingPolicy("g", namedGroupingPolicy)
+	e.AddNamedGroupingPolicy("g",namedGroupingPolicy)
 	testGetRoles(t, e, "alice", []string{"data2_admin"})
-	e.RemoveNamedGroupingPolicy("g", namedGroupingPolicy)
+	e.RemoveNamedGroupingPolicy("g",namedGroupingPolicy)
 
 	testGetRoles(t, e, "alice", []string{})
 	testGetRoles(t, e, "bob", []string{"data1_admin"})

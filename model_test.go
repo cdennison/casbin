@@ -17,8 +17,8 @@ package casbin
 import (
 	"testing"
 
-	"github.com/casbin/casbin/file-adapter"
 	"github.com/casbin/casbin/rbac"
+	"github.com/casbin/casbin/file-adapter"
 )
 
 func testEnforce(t *testing.T, e *Enforcer, sub string, obj interface{}, act string, res bool) {
@@ -28,14 +28,14 @@ func testEnforce(t *testing.T, e *Enforcer, sub string, obj interface{}, act str
 	}
 }
 
-func testEnforceWithoutUsers(t *testing.T, e *Enforcer, obj string, act string, res bool) {
+func testEnforceSyncWithoutUsers(t *testing.T, e *SyncedEnforcer, obj string, act string, res bool) {
 	t.Helper()
 	if e.Enforce(obj, act) != res {
 		t.Errorf("%s, %s: %t, supposed to be %t", obj, act, !res, res)
 	}
 }
 
-func testDomainEnforce(t *testing.T, e *Enforcer, sub string, dom string, obj string, act string, res bool) {
+func testDomainEnforce(t *testing.T, e *SyncedEnforcer, sub string, dom string, obj string, act string, res bool) {
 	t.Helper()
 	if e.Enforce(sub, dom, obj, act) != res {
 		t.Errorf("%s, %s, %s, %s: %t, supposed to be %t", sub, dom, obj, act, !res, res)
@@ -50,111 +50,111 @@ func testEnforceSync(t *testing.T, e *SyncedEnforcer, sub string, obj interface{
 }
 
 func TestBasicModel(t *testing.T) {
-	e := NewEnforcer("examples/basic_model.conf", "examples/basic_policy.csv")
+	e := NewSyncedEnforcer("examples/basic_model.conf", "examples/basic_policy.csv")
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", false)
-	testEnforce(t, e, "alice", "data2", "write", false)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", false)
+	testEnforceSync(t, e, "alice", "data2", "write", false)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", true)
 }
 
 func TestBasicModelNoPolicy(t *testing.T) {
-	e := NewEnforcer("examples/basic_model.conf")
+	e := NewSyncedEnforcer("examples/basic_model.conf")
 
-	testEnforce(t, e, "alice", "data1", "read", false)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", false)
-	testEnforce(t, e, "alice", "data2", "write", false)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", false)
+	testEnforceSync(t, e, "alice", "data1", "read", false)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", false)
+	testEnforceSync(t, e, "alice", "data2", "write", false)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", false)
 }
 
 func TestBasicModelWithRoot(t *testing.T) {
-	e := NewEnforcer("examples/basic_model_with_root.conf", "examples/basic_policy.csv")
+	e := NewSyncedEnforcer("examples/basic_model_with_root.conf", "examples/basic_policy.csv")
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", false)
-	testEnforce(t, e, "alice", "data2", "write", false)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", true)
-	testEnforce(t, e, "root", "data1", "read", true)
-	testEnforce(t, e, "root", "data1", "write", true)
-	testEnforce(t, e, "root", "data2", "read", true)
-	testEnforce(t, e, "root", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", false)
+	testEnforceSync(t, e, "alice", "data2", "write", false)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", true)
+	testEnforceSync(t, e, "root", "data1", "read", true)
+	testEnforceSync(t, e, "root", "data1", "write", true)
+	testEnforceSync(t, e, "root", "data2", "read", true)
+	testEnforceSync(t, e, "root", "data2", "write", true)
 }
 
 func TestBasicModelWithRootNoPolicy(t *testing.T) {
-	e := NewEnforcer("examples/basic_model_with_root.conf")
+	e := NewSyncedEnforcer("examples/basic_model_with_root.conf")
 
-	testEnforce(t, e, "alice", "data1", "read", false)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", false)
-	testEnforce(t, e, "alice", "data2", "write", false)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", false)
-	testEnforce(t, e, "root", "data1", "read", true)
-	testEnforce(t, e, "root", "data1", "write", true)
-	testEnforce(t, e, "root", "data2", "read", true)
-	testEnforce(t, e, "root", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", false)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", false)
+	testEnforceSync(t, e, "alice", "data2", "write", false)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", false)
+	testEnforceSync(t, e, "root", "data1", "read", true)
+	testEnforceSync(t, e, "root", "data1", "write", true)
+	testEnforceSync(t, e, "root", "data2", "read", true)
+	testEnforceSync(t, e, "root", "data2", "write", true)
 }
 
 func TestBasicModelWithoutUsers(t *testing.T) {
-	e := NewEnforcer("examples/basic_model_without_users.conf", "examples/basic_policy_without_users.csv")
+	e := NewSyncedEnforcer("examples/basic_model_without_users.conf", "examples/basic_policy_without_users.csv")
 
-	testEnforceWithoutUsers(t, e, "data1", "read", true)
-	testEnforceWithoutUsers(t, e, "data1", "write", false)
-	testEnforceWithoutUsers(t, e, "data2", "read", false)
-	testEnforceWithoutUsers(t, e, "data2", "write", true)
+	testEnforceSyncWithoutUsers(t, e, "data1", "read", true)
+	testEnforceSyncWithoutUsers(t, e, "data1", "write", false)
+	testEnforceSyncWithoutUsers(t, e, "data2", "read", false)
+	testEnforceSyncWithoutUsers(t, e, "data2", "write", true)
 }
 
 func TestBasicModelWithoutResources(t *testing.T) {
-	e := NewEnforcer("examples/basic_model_without_resources.conf", "examples/basic_policy_without_resources.csv")
+	e := NewSyncedEnforcer("examples/basic_model_without_resources.conf", "examples/basic_policy_without_resources.csv")
 
-	testEnforceWithoutUsers(t, e, "alice", "read", true)
-	testEnforceWithoutUsers(t, e, "alice", "write", false)
-	testEnforceWithoutUsers(t, e, "bob", "read", false)
-	testEnforceWithoutUsers(t, e, "bob", "write", true)
+	testEnforceSyncWithoutUsers(t, e, "alice", "read", true)
+	testEnforceSyncWithoutUsers(t, e, "alice", "write", false)
+	testEnforceSyncWithoutUsers(t, e, "bob", "read", false)
+	testEnforceSyncWithoutUsers(t, e, "bob", "write", true)
 }
 
 func TestRBACModel(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
+	e := NewSyncedEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", true)
-	testEnforce(t, e, "alice", "data2", "write", true)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", true)
+	testEnforceSync(t, e, "alice", "data2", "write", true)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", true)
 }
 
 func TestRBACModelWithResourceRoles(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model_with_resource_roles.conf", "examples/rbac_policy_with_resource_roles.csv")
+	e := NewSyncedEnforcer("examples/rbac_model_with_resource_roles.conf", "examples/rbac_policy_with_resource_roles.csv")
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", true)
-	testEnforce(t, e, "alice", "data2", "read", false)
-	testEnforce(t, e, "alice", "data2", "write", true)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", true)
+	testEnforceSync(t, e, "alice", "data2", "read", false)
+	testEnforceSync(t, e, "alice", "data2", "write", true)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", true)
 }
 
 func TestRBACModelWithDomains(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model_with_domains.conf", "examples/rbac_policy_with_domains.csv")
+	e := NewSyncedEnforcer("examples/rbac_model_with_domains.conf", "examples/rbac_policy_with_domains.csv")
 
 	testDomainEnforce(t, e, "alice", "domain1", "data1", "read", true)
 	testDomainEnforce(t, e, "alice", "domain1", "data1", "write", true)
@@ -167,7 +167,7 @@ func TestRBACModelWithDomains(t *testing.T) {
 }
 
 func TestRBACModelWithDomainsAtRuntime(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model_with_domains.conf")
+	e := NewSyncedEnforcer("examples/rbac_model_with_domains.conf")
 
 	e.AddPolicy("admin", "domain1", "data1", "read")
 	e.AddPolicy("admin", "domain1", "data1", "write")
@@ -213,7 +213,7 @@ func TestRBACModelWithDomainsAtRuntime(t *testing.T) {
 
 func TestRBACModelWithDomainsAtRuntimeMockAdapter(t *testing.T) {
 	adapter := fileadapter.NewAdapterMock("examples/rbac_policy_with_domains.csv")
-	e := NewEnforcer("examples/rbac_model_with_domains.conf", adapter)
+	e := NewSyncedEnforcer("examples/rbac_model_with_domains.conf", adapter)
 
 	sampleWatcher := SampleWatcher{}
 	e.SetWatcher(sampleWatcher)
@@ -233,54 +233,54 @@ func TestRBACModelWithDomainsAtRuntimeMockAdapter(t *testing.T) {
 }
 
 func TestRBACModelWithDeny(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model_with_deny.conf", "examples/rbac_policy_with_deny.csv")
+	e := NewSyncedEnforcer("examples/rbac_model_with_deny.conf", "examples/rbac_policy_with_deny.csv")
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", true)
-	testEnforce(t, e, "alice", "data2", "write", false)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", true)
+	testEnforceSync(t, e, "alice", "data2", "write", false)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", true)
 }
 
 func TestRBACModelWithNotDeny(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model_with_not_deny.conf", "examples/rbac_policy_with_deny.csv")
+	e := NewSyncedEnforcer("examples/rbac_model_with_not_deny.conf", "examples/rbac_policy_with_deny.csv")
 
-	testEnforce(t, e, "alice", "data2", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "write", false)
 }
 
 func TestRBACModelWithCustomData(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
+	e := NewSyncedEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
 
 	// You can add custom data to a grouping policy, Casbin will ignore it. It is only meaningful to the caller.
 	// This feature can be used to store information like whether "bob" is an end user (so no subject will inherit "bob")
 	// For Casbin, it is equivalent to: e.AddGroupingPolicy("bob", "data2_admin")
 	e.AddGroupingPolicy("bob", "data2_admin", "custom_data")
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", true)
-	testEnforce(t, e, "alice", "data2", "write", true)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", true)
-	testEnforce(t, e, "bob", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", true)
+	testEnforceSync(t, e, "alice", "data2", "write", true)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", true)
+	testEnforceSync(t, e, "bob", "data2", "write", true)
 
 	// You should also take the custom data as a parameter when deleting a grouping policy.
 	// e.RemoveGroupingPolicy("bob", "data2_admin") won't work.
 	// Or you can remove it by using RemoveFilteredGroupingPolicy().
 	e.RemoveGroupingPolicy("bob", "data2_admin", "custom_data")
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", true)
-	testEnforce(t, e, "alice", "data2", "write", true)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", true)
+	testEnforceSync(t, e, "alice", "data2", "write", true)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", true)
 }
 
 type testCustomRoleManager struct{}
@@ -312,19 +312,19 @@ func newTestCustomRoleManager() rbac.RoleManagerConstructor {
 }
 
 func TestRBACModelWithCustomRoleManager(t *testing.T) {
-	e := NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
+	e := NewSyncedEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
 	e.SetRoleManager(newTestCustomRoleManager())
 	e.LoadModel()
 	_ = e.LoadPolicy()
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", true)
-	testEnforce(t, e, "alice", "data2", "write", true)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", false)
-	testEnforce(t, e, "bob", "data2", "write", true)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", true)
+	testEnforceSync(t, e, "alice", "data2", "write", true)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", false)
+	testEnforceSync(t, e, "bob", "data2", "write", true)
 }
 
 type testResource struct {
@@ -340,115 +340,115 @@ func newTestResource(name string, owner string) testResource {
 }
 
 func TestABACModel(t *testing.T) {
-	e := NewEnforcer("examples/abac_model.conf")
+	e := NewSyncedEnforcer("examples/abac_model.conf")
 
 	data1 := newTestResource("data1", "alice")
 	data2 := newTestResource("data2", "bob")
 
-	testEnforce(t, e, "alice", data1, "read", true)
-	testEnforce(t, e, "alice", data1, "write", true)
-	testEnforce(t, e, "alice", data2, "read", false)
-	testEnforce(t, e, "alice", data2, "write", false)
-	testEnforce(t, e, "bob", data1, "read", false)
-	testEnforce(t, e, "bob", data1, "write", false)
-	testEnforce(t, e, "bob", data2, "read", true)
-	testEnforce(t, e, "bob", data2, "write", true)
+	testEnforceSync(t, e, "alice", data1, "read", true)
+	testEnforceSync(t, e, "alice", data1, "write", true)
+	testEnforceSync(t, e, "alice", data2, "read", false)
+	testEnforceSync(t, e, "alice", data2, "write", false)
+	testEnforceSync(t, e, "bob", data1, "read", false)
+	testEnforceSync(t, e, "bob", data1, "write", false)
+	testEnforceSync(t, e, "bob", data2, "read", true)
+	testEnforceSync(t, e, "bob", data2, "write", true)
 }
 
 func TestKeyMatchModel(t *testing.T) {
-	e := NewEnforcer("examples/keymatch_model.conf", "examples/keymatch_policy.csv")
+	e := NewSyncedEnforcer("examples/keymatch_model.conf", "examples/keymatch_policy.csv")
 
-	testEnforce(t, e, "alice", "/alice_data/resource1", "GET", true)
-	testEnforce(t, e, "alice", "/alice_data/resource1", "POST", true)
-	testEnforce(t, e, "alice", "/alice_data/resource2", "GET", true)
-	testEnforce(t, e, "alice", "/alice_data/resource2", "POST", false)
-	testEnforce(t, e, "alice", "/bob_data/resource1", "GET", false)
-	testEnforce(t, e, "alice", "/bob_data/resource1", "POST", false)
-	testEnforce(t, e, "alice", "/bob_data/resource2", "GET", false)
-	testEnforce(t, e, "alice", "/bob_data/resource2", "POST", false)
+	testEnforceSync(t, e, "alice", "/alice_data/resource1", "GET", true)
+	testEnforceSync(t, e, "alice", "/alice_data/resource1", "POST", true)
+	testEnforceSync(t, e, "alice", "/alice_data/resource2", "GET", true)
+	testEnforceSync(t, e, "alice", "/alice_data/resource2", "POST", false)
+	testEnforceSync(t, e, "alice", "/bob_data/resource1", "GET", false)
+	testEnforceSync(t, e, "alice", "/bob_data/resource1", "POST", false)
+	testEnforceSync(t, e, "alice", "/bob_data/resource2", "GET", false)
+	testEnforceSync(t, e, "alice", "/bob_data/resource2", "POST", false)
 
-	testEnforce(t, e, "bob", "/alice_data/resource1", "GET", false)
-	testEnforce(t, e, "bob", "/alice_data/resource1", "POST", false)
-	testEnforce(t, e, "bob", "/alice_data/resource2", "GET", true)
-	testEnforce(t, e, "bob", "/alice_data/resource2", "POST", false)
-	testEnforce(t, e, "bob", "/bob_data/resource1", "GET", false)
-	testEnforce(t, e, "bob", "/bob_data/resource1", "POST", true)
-	testEnforce(t, e, "bob", "/bob_data/resource2", "GET", false)
-	testEnforce(t, e, "bob", "/bob_data/resource2", "POST", true)
+	testEnforceSync(t, e, "bob", "/alice_data/resource1", "GET", false)
+	testEnforceSync(t, e, "bob", "/alice_data/resource1", "POST", false)
+	testEnforceSync(t, e, "bob", "/alice_data/resource2", "GET", true)
+	testEnforceSync(t, e, "bob", "/alice_data/resource2", "POST", false)
+	testEnforceSync(t, e, "bob", "/bob_data/resource1", "GET", false)
+	testEnforceSync(t, e, "bob", "/bob_data/resource1", "POST", true)
+	testEnforceSync(t, e, "bob", "/bob_data/resource2", "GET", false)
+	testEnforceSync(t, e, "bob", "/bob_data/resource2", "POST", true)
 
-	testEnforce(t, e, "cathy", "/cathy_data", "GET", true)
-	testEnforce(t, e, "cathy", "/cathy_data", "POST", true)
-	testEnforce(t, e, "cathy", "/cathy_data", "DELETE", false)
+	testEnforceSync(t, e, "cathy", "/cathy_data", "GET", true)
+	testEnforceSync(t, e, "cathy", "/cathy_data", "POST", true)
+	testEnforceSync(t, e, "cathy", "/cathy_data", "DELETE", false)
 }
 
 func TestKeyMatch2Model(t *testing.T) {
-	e := NewEnforcer("examples/keymatch2_model.conf", "examples/keymatch2_policy.csv")
+	e := NewSyncedEnforcer("examples/keymatch2_model.conf", "examples/keymatch2_policy.csv")
 
-	testEnforce(t, e, "alice", "/alice_data", "GET", false)
-	testEnforce(t, e, "alice", "/alice_data/resource1", "GET", true)
-	testEnforce(t, e, "alice", "/alice_data2/myid", "GET", false)
-	testEnforce(t, e, "alice", "/alice_data2/myid/using/res_id", "GET", true)
+	testEnforceSync(t, e, "alice", "/alice_data", "GET", false)
+	testEnforceSync(t, e, "alice", "/alice_data/resource1", "GET", true)
+	testEnforceSync(t, e, "alice", "/alice_data2/myid", "GET", false)
+	testEnforceSync(t, e, "alice", "/alice_data2/myid/using/res_id", "GET", true)
 }
 
 func KeyMatchCustom(args ...interface{}) (interface{}, error) {
-	match := false
-	if args[0].(string) == "/alice_data2/myid/using/res_id" && args[1].(string) == "/alice_data/:resource" {
-		match = true
+	match:=false
+	if args[0].(string)=="/alice_data2/myid/using/res_id" && args[1].(string)=="/alice_data/:resource"{
+		match=true
 	}
-	if args[0].(string) == "/alice_data2/myid/using/res_id" && args[1].(string) == "/alice_data2/:id/using/:resId" {
-		match = true
+	if args[0].(string)=="/alice_data2/myid/using/res_id" && args[1].(string)=="/alice_data2/:id/using/:resId"{
+		match=true
 	}
 	return match, nil
 }
 
 func TestKeyMatchCustomModel(t *testing.T) {
-	e := NewEnforcer("examples/keymatch_custom_model.conf", "examples/keymatch2_policy.csv")
+	e := NewSyncedEnforcer("examples/keymatch_custom_model.conf", "examples/keymatch2_policy.csv")
 
 	e.AddFunction("keyMatchCustom", KeyMatchCustom)
 
-	testEnforce(t, e, "alice", "/alice_data2/myid", "GET", false)
-	testEnforce(t, e, "alice", "/alice_data2/myid/using/res_id", "GET", true)
+	testEnforceSync(t, e, "alice", "/alice_data2/myid", "GET", false)
+	testEnforceSync(t, e, "alice", "/alice_data2/myid/using/res_id", "GET", true)
 }
 
 func TestIPMatchModel(t *testing.T) {
-	e := NewEnforcer("examples/ipmatch_model.conf", "examples/ipmatch_policy.csv")
+	e := NewSyncedEnforcer("examples/ipmatch_model.conf", "examples/ipmatch_policy.csv")
 
-	testEnforce(t, e, "192.168.2.123", "data1", "read", true)
-	testEnforce(t, e, "192.168.2.123", "data1", "write", false)
-	testEnforce(t, e, "192.168.2.123", "data2", "read", false)
-	testEnforce(t, e, "192.168.2.123", "data2", "write", false)
+	testEnforceSync(t, e, "192.168.2.123", "data1", "read", true)
+	testEnforceSync(t, e, "192.168.2.123", "data1", "write", false)
+	testEnforceSync(t, e, "192.168.2.123", "data2", "read", false)
+	testEnforceSync(t, e, "192.168.2.123", "data2", "write", false)
 
-	testEnforce(t, e, "192.168.0.123", "data1", "read", false)
-	testEnforce(t, e, "192.168.0.123", "data1", "write", false)
-	testEnforce(t, e, "192.168.0.123", "data2", "read", false)
-	testEnforce(t, e, "192.168.0.123", "data2", "write", false)
+	testEnforceSync(t, e, "192.168.0.123", "data1", "read", false)
+	testEnforceSync(t, e, "192.168.0.123", "data1", "write", false)
+	testEnforceSync(t, e, "192.168.0.123", "data2", "read", false)
+	testEnforceSync(t, e, "192.168.0.123", "data2", "write", false)
 
-	testEnforce(t, e, "10.0.0.5", "data1", "read", false)
-	testEnforce(t, e, "10.0.0.5", "data1", "write", false)
-	testEnforce(t, e, "10.0.0.5", "data2", "read", false)
-	testEnforce(t, e, "10.0.0.5", "data2", "write", true)
+	testEnforceSync(t, e, "10.0.0.5", "data1", "read", false)
+	testEnforceSync(t, e, "10.0.0.5", "data1", "write", false)
+	testEnforceSync(t, e, "10.0.0.5", "data2", "read", false)
+	testEnforceSync(t, e, "10.0.0.5", "data2", "write", true)
 
-	testEnforce(t, e, "192.168.0.1", "data1", "read", false)
-	testEnforce(t, e, "192.168.0.1", "data1", "write", false)
-	testEnforce(t, e, "192.168.0.1", "data2", "read", false)
-	testEnforce(t, e, "192.168.0.1", "data2", "write", false)
+	testEnforceSync(t, e, "192.168.0.1", "data1", "read", false)
+	testEnforceSync(t, e, "192.168.0.1", "data1", "write", false)
+	testEnforceSync(t, e, "192.168.0.1", "data2", "read", false)
+	testEnforceSync(t, e, "192.168.0.1", "data2", "write", false)
 }
 
 func TestPriorityModel(t *testing.T) {
-	e := NewEnforcer("examples/priority_model.conf", "examples/priority_policy.csv")
+	e := NewSyncedEnforcer("examples/priority_model.conf", "examples/priority_policy.csv")
 
-	testEnforce(t, e, "alice", "data1", "read", true)
-	testEnforce(t, e, "alice", "data1", "write", false)
-	testEnforce(t, e, "alice", "data2", "read", false)
-	testEnforce(t, e, "alice", "data2", "write", false)
-	testEnforce(t, e, "bob", "data1", "read", false)
-	testEnforce(t, e, "bob", "data1", "write", false)
-	testEnforce(t, e, "bob", "data2", "read", true)
-	testEnforce(t, e, "bob", "data2", "write", false)
+	testEnforceSync(t, e, "alice", "data1", "read", true)
+	testEnforceSync(t, e, "alice", "data1", "write", false)
+	testEnforceSync(t, e, "alice", "data2", "read", false)
+	testEnforceSync(t, e, "alice", "data2", "write", false)
+	testEnforceSync(t, e, "bob", "data1", "read", false)
+	testEnforceSync(t, e, "bob", "data1", "write", false)
+	testEnforceSync(t, e, "bob", "data2", "read", true)
+	testEnforceSync(t, e, "bob", "data2", "write", false)
 }
 
 func TestPriorityModelIndeterminate(t *testing.T) {
-	e := NewEnforcer("examples/priority_model.conf", "examples/priority_policy_indetermine.csv")
+	e := NewSyncedEnforcer("examples/priority_model.conf", "examples/priority_policy_indetermine.csv")
 
-	testEnforce(t, e, "alice", "data1", "read", false)
+	testEnforceSync(t, e, "alice", "data1", "read", false)
 }
