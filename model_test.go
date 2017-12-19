@@ -215,9 +215,6 @@ func TestRBACModelWithDomainsAtRuntimeMockAdapter(t *testing.T) {
 	adapter := fileadapter.NewAdapterMock("examples/rbac_policy_with_domains.csv")
 	e := NewSyncedEnforcer("examples/rbac_model_with_domains.conf", adapter)
 
-	sampleWatcher := SampleWatcher{}
-	e.SetWatcher(sampleWatcher)
-
 	e.AddPolicy("admin", "domain3", "data1", "read")
 	e.AddGroupingPolicy("alice", "admin", "domain3")
 
@@ -245,7 +242,7 @@ func TestRBACModelWithDeny(t *testing.T) {
 	testEnforceSync(t, e, "bob", "data2", "write", true)
 }
 
-func TestRBACModelWithNotDeny(t *testing.T) {
+func TestRBACModelWithOnlyDeny(t *testing.T) {
 	e := NewSyncedEnforcer("examples/rbac_model_with_not_deny.conf", "examples/rbac_policy_with_deny.csv")
 
 	testEnforceSync(t, e, "alice", "data2", "write", false)
@@ -448,7 +445,6 @@ func TestPriorityModel(t *testing.T) {
 }
 
 func TestPriorityModelIndeterminate(t *testing.T) {
-	e := NewSyncedEnforcer("examples/priority_model.conf", "examples/priority_policy_indetermine.csv")
-
+	e := NewSyncedEnforcer("examples/priority_model.conf", "examples/priority_policy_indeterminate.csv")
 	testEnforceSync(t, e, "alice", "data1", "read", false)
 }

@@ -122,7 +122,7 @@ func TestKeyMatchModelInMemory(t *testing.T) {
 //	testEnforceSync(t, e, "alice", "/alice_data/resource2", "POST", false)
 //}
 
-func TestRBACModelInMemoryIndetermine(t *testing.T) {
+func TestRBACModelInMemoryIndeterminate(t *testing.T) {
 	m := NewModel()
 	m.AddDef("r", "r", "sub, obj, act")
 	m.AddDef("p", "p", "sub, obj, act")
@@ -377,26 +377,6 @@ func TestNonSync(t *testing.T) {
 	testEnforce(t, e, "bob", "data1", "write", false)
 	testEnforce(t, e, "bob", "data2", "read", false)
 	testEnforce(t, e, "bob", "data2", "write", true)
-}
-
-type SampleWatcher struct {
-}
-
-func (w SampleWatcher) SetUpdateCallback(func(string)) error {
-	return nil
-}
-
-func (w SampleWatcher) Update() error {
-	return nil
-}
-
-func TestSetWatcher(t *testing.T) {
-	e := NewSyncedEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
-
-	sampleWatcher := SampleWatcher{}
-	e.SetWatcher(sampleWatcher)
-
-	e.SavePolicy() //calls watcher.Update()
 }
 
 func TestRoleLinks(t *testing.T) {
